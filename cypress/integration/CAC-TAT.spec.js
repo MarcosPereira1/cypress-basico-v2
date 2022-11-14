@@ -2,7 +2,8 @@
 
 
 describe('Central de Atendimento ao Cliente TAT', function() {
-                                                                        /*beforeeach é uma boa pratica de uso no teste, ele significa, "antes do teste", entao tudo que precisa executar antes, a gente poem nesse bloco, exemplo, antes de executar um teste eu preciso acessar a page da web primeiro */
+
+    const THREE_SECONDS_IN_MS = 3000                                                                  /*beforeeach é uma boa pratica de uso no teste, ele significa, "antes do teste", entao tudo que precisa executar antes, a gente poem nesse bloco, exemplo, antes de executar um teste eu preciso acessar a page da web primeiro */
     beforeEach(function() {         
         cy.visit('./src/index.html')   
     })
@@ -11,8 +12,10 @@ describe('Central de Atendimento ao Cliente TAT', function() {
         cy.title().should('be.equal', 'Central de Atendimento ao Cliente TAT')
     })
                                                                          /* o .only é para facilitar a execução de nossas feature, ao adicionar o .only só sera executado este teste */
-    it('preenche os campos obrigatórios e envia o formulário', function() {   
+    it('preenche os campos obrigatórios e envia o formulário', function() {     // exibe mensagem por 3 segundos 
        
+        cy.clock()
+
         const longText = 'teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste teste testeteste teste teste teste'
         cy.get('#firstName').type('Marcos')
         cy.get('#lastName').type('Vinicius')
@@ -22,9 +25,13 @@ describe('Central de Atendimento ao Cliente TAT', function() {
 
         cy.get('.success').should('be.visible')
 
+        cy.tick(THREE_SECONDS_IN_MS)
+        cy.get('.success').should('not.be.visible')
+
     })
 
     it('exibe mensagem de erro ao submeter o formulário com um email com formatação inválida', function() {
+        cy.clock()
         cy.get('#firstName').type('Marcos')
         cy.get('#lastName').type('Vinicius')
         cy.get('#email').type('marcospereira@teste,com')
@@ -32,6 +39,10 @@ describe('Central de Atendimento ao Cliente TAT', function() {
         cy.contains('button', 'Enviar' ).click()
 
         cy.get('.error').should('be.visible')
+
+        cy.tick(THREE_SECONDS_IN_MS)
+
+        cy.get('.error').should('not.be.visible')
     })
 
     it('campo telefone continua vazio quando preenchido com valor não-numerico', function() {
@@ -41,6 +52,7 @@ describe('Central de Atendimento ao Cliente TAT', function() {
     })
 
     it('exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário', function() {
+        cy.clock()
         cy.get('#firstName').type('Marcos')
         cy.get('#lastName').type('Vinicius')
         cy.get('#email').type('marcospereira@teste.com')
@@ -48,6 +60,11 @@ describe('Central de Atendimento ao Cliente TAT', function() {
         cy.get('#open-text-area').type('teste')
         cy.contains('button', 'Enviar' ).click()
         cy.get('.error').should('be.visible')
+
+        cy.tick(THREE_SECONDS_IN_MS)
+
+        cy.get('.error').should('not.be.visible')
+        
     })
 
     it('preenche e limpa os campos nome, sobrenome, email e telefone', function() {    //exercicio 5
@@ -77,14 +94,27 @@ describe('Central de Atendimento ao Cliente TAT', function() {
     })
 
     it('exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios', function() {
+        cy.clock()
+        
         cy.get('button[type="submit"]').click()
         cy.get('.error').should('be.visible')
+
+        cy.tick(THREE_SECONDS_IN_MS)
+
+        cy.get('.error').should('not.be.visible')
+        
     })
 
-    it('envia o formuário com sucesso usando um comando customizado', function() {
+    it.only('envia o formuário com sucesso usando um comando customizado', function() {
+        cy.clock()
+
         cy.fillMandatoryFieldsAndSubmit()
 
         cy.get('.success').should('be.visible')
+
+        cy.tick(THREE_SECONDS_IN_MS)
+
+        cy.get('.success').should('not.be.visible')
     })
 
 // SESSÃO DE LISTA SUSPENSA
@@ -178,5 +208,7 @@ it('seleciona um arquivo da pasta fixtures', function() {
     })
 
     // Simulando o viewport de um dispositivo móvel
+
+
 
   })
